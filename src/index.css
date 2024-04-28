@@ -32,4 +32,5 @@ canvas
     border: none;
     border-radius: 20px;
     background: #000000;
+    pointer-events: all;
 }

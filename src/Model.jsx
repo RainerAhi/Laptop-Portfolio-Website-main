@@ -8,29 +8,50 @@ gsap.registerPlugin(ScrollTrigger)
 export default function Model(props) {
   const { nodes, materials } = useGLTF('./computermodel.gltf')
 
-  const { camera, scene } = useThree();
-  const model = useRef();
-  const [isRotated, setIsRotated] = useState(false);
+  const { camera, scene } = useThree()
 
-  const tl = gsap.timeline();
+  const model = useRef()
+
+  const tl = useRef(gsap.timeline({ paused: true })); // Initialize timeline with paused state
+
+  let mm = gsap.matchMedia();
 
   useLayoutEffect(() => {
-    tl.to(scene.camera, {
-      y: 1,
-      x: 1,
-      z: 1,
-      duration: 1, // Animation duration in seconds
-    });
-  }, [isRotated]);
+    mm.add({
+      isDesktop: "(min-width: 800px)",
+      isMobile: "(max-width: 799px)"
+    }, (context) => {
+      let { isMobile, isDesktop } = context.conditions;
 
-  const handleClick = () => {
-    setIsRotated(!isRotated); // Toggle rotation status on click
+      //FIRST TO SECOND
+
+      tl.current.to(camera.position, {
+        x: 0,
+        y: 1,
+        z: 4,
+      });
+    });
+  }, []);
+
+  const handleHover = () => {
+    if (tl.current.progress() === 1) {
+      tl.current.reverse();
+    } else {
+      tl.current.play();
+    }
+  };
+
+  const handleHoverOut = () => {
+    // Check if the timeline is currently playing forward
+    if (tl.current.progress() !== 0 && !tl.current.reversed()) {
+      tl.current.reverse();
+    }
   };
 
   return (
-    <group ref={model} onClick={handleClick} >
+    <group ref={model} >
     <Html transform wrapperClass="htmlScreen" distanceFactor={ 1.17 } position={ [ 0, 0.36, -1.4 ] } rotation-x={ - 0.256 } >
-        <iframe src="https://rainerahi.vercel.app/" />
+        <iframe onPointerOver={handleHover} onPointerOut={handleHoverOut}  src="https://rainerahi.vercel.app/" />
     </Html>
     <group {...props} dispose={null}>
       <group position={[0, 0.519, 0]} scale={0.103}>
