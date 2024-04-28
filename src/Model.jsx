@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Html, OrbitControls, useGLTF } from '@react-three/drei'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -42,7 +42,7 @@ export default function Model(props) {
 
   return (
     <group ref={model} >
-    <OrbitControls enableZoom={ false } maxPolarAngle={ Math.PI / 2 } />
+    <OrbitControls enableRotate={ false } enableZoom={ false } maxPolarAngle={ Math.PI / 2 } />
     <Html transform wrapperClass="htmlScreen" distanceFactor={ 1.17 } position={ [ 0, 0.36, -1.4 ] } rotation-x={ - 0.256 } >
         <iframe ref={iframeRef} onMouseEnter={handleHover} onMouseLeave={handleMouseLeave} src="https://rainerahi.vercel.app/" />
     </Html>
