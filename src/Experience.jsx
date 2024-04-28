@@ -3,11 +3,8 @@ import Model from './Model';
 
 export const Experience = () => {
 
-  const computer = useGLTF('./computermodel.gltf')
-
   return (
     <>
-      <OrbitControls enableZoom={ false } maxPolarAngle={ Math.PI / 2 } />
       <Float rotationIntensity={ 0.4 } >  
         <rectAreaLight width={ 2.5 } height={ 1.65 } intensity={ 65 } color={ 'white' } rotation={ [ - 0.1, Math.PI, 0 ] } position={ [ 0, 0.55, - 1.15 ] } />
         <Model position={ [ 0, -1.2, 0 ] }  />
@@ -19,3 +16,4 @@ export const Experience = () => {
     </>
   );
 };
+

@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from 'react'
-import { Html, useGLTF } from '@react-three/drei'
+import { Html, OrbitControls, useGLTF } from '@react-three/drei'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useThree } from '@react-three/fiber'
@@ -8,50 +8,43 @@ gsap.registerPlugin(ScrollTrigger)
 export default function Model(props) {
   const { nodes, materials } = useGLTF('./computermodel.gltf')
 
-  const { camera, scene } = useThree()
+  const { camera } = useThree();
 
-  const model = useRef()
+  const model = useRef();
+  const iframeRef = useRef();
+  const initialCameraPosition = useRef({ x: camera.position.x, y: camera.position.y, z: camera.position.z });
 
-  const tl = useRef(gsap.timeline({ paused: true })); // Initialize timeline with paused state
+  const tl = gsap.timeline();
 
-  let mm = gsap.matchMedia();
-
-  useLayoutEffect(() => {
-    mm.add({
-      isDesktop: "(min-width: 800px)",
-      isMobile: "(max-width: 799px)"
-    }, (context) => {
-      let { isMobile, isDesktop } = context.conditions;
-
-      //FIRST TO SECOND
-
-      tl.current.to(camera.position, {
-        x: 0,
-        y: 1,
-        z: 4,
-      });
+  // Function to animate camera position
+  const animateCamera = (x, y, z) => {
+    gsap.to(camera.position, {
+      duration: 1,
+      x,
+      y,
+      z,
+      ease: 'power3.out'
     });
-  }, []);
+  };
 
+  // Hover event handler
   const handleHover = () => {
-    if (tl.current.progress() === 1) {
-      tl.current.reverse();
-    } else {
-      tl.current.play();
-    }
+    const newPosition = { x: 0, y: 1, z: 4 };
+    animateCamera(newPosition.x, newPosition.y, newPosition.z);
   };
 
-  const handleHoverOut = () => {
-    // Check if the timeline is currently playing forward
-    if (tl.current.progress() !== 0 && !tl.current.reversed()) {
-      tl.current.reverse();
-    }
+  // Mouse leave event handler
+  const handleMouseLeave = () => {
+    const { x, y, z } = initialCameraPosition.current;
+    animateCamera(x, y, z);
   };
+
 
   return (
     <group ref={model} >
+    <OrbitControls enableZoom={ false } maxPolarAngle={ Math.PI / 2 } />
     <Html transform wrapperClass="htmlScreen" distanceFactor={ 1.17 } position={ [ 0, 0.36, -1.4 ] } rotation-x={ - 0.256 } >
-        <iframe onPointerOver={handleHover} onPointerOut={handleHoverOut}  src="https://rainerahi.vercel.app/" />
+        <iframe ref={iframeRef} onMouseEnter={handleHover} onMouseLeave={handleMouseLeave} src="https://rainerahi.vercel.app/" />
     </Html>
     <group {...props} dispose={null}>
       <group position={[0, 0.519, 0]} scale={0.103}>
